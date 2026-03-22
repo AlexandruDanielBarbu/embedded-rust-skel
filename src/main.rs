@@ -10,8 +10,14 @@ use defmt_rtt as _;
 
 #[entry]
 fn main() -> ! {
-    info!("Device has started");
-    panic!("panic here");
+    info!("This is my custom message. :)))))))))))))))))");
+    // panic!("panic here");
+    loop {
+        // Your code goes here
+
+        // For now, we just spin to satisfy the "!" return type
+        cortex_m::asm::nop();
+    }
 }
 
 #[panic_handler]

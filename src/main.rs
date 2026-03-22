@@ -1,6 +1,7 @@
 #![no_std]
 #![no_main]
 
+use cortex_m as _;
 use cortex_m_rt::entry;
 use defmt::{error, info};
 // use RTT for defmt transport

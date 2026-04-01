@@ -8,34 +8,39 @@ use embassy_stm32::gpio::{Level, Output, Speed};
 use embassy_time::{Instant, Timer};
 use panic_probe as _;
 
-fn busy_wait(ms: u64) {
-    let start_time = Instant::now();
-    while start_time.elapsed().as_millis() < ms {}
-}
-
-#[task(pool_size = 2)]
-async fn led_blink(mut led_pin: Output<'static>) {
+#[task(pool_size = 4)]
+async fn led_blink(mut led_pin: Output<'static>, freq: u64) {
+    let mils = 1000 / freq / 2; // for the light to be visibly on
     loop {
         led_pin.set_low();
-        // busy_wait(500);
-        Timer::after_millis(500).await;
+        Timer::after_millis(mils).await;
 
         led_pin.set_high();
-        // busy_wait(500);
-        Timer::after_millis(500).await;
+        Timer::after_millis(mils).await;
     }
 }
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) {
     let peripherals = embassy_stm32::init(Default::default());
-    info!("Device started Boyyyy");
+    info!("S-a dat drumul! :)))))))");
 
     // The red LED is connected to D8 (PC7).
     let led_red = Output::new(peripherals.PC7, Level::High, Speed::Low);
     // The blue LED is connected to D9 (PC6).
     let led_blue = Output::new(peripherals.PC6, Level::High, Speed::Low);
+    // The green LED is connected to D11 (PA7).
+    let led_green = Output::new(peripherals.PA7, Level::High, Speed::Low);
+    // The yellow LED is connected to D10 (PC9).
+    let led_yellow = Output::new(peripherals.PC9, Level::High, Speed::Low);
 
-    spawner.spawn(led_blink(led_red)).unwrap();
-    spawner.spawn(led_blink(led_blue)).unwrap();
+    spawner.spawn(led_blink(led_red, 4)).unwrap();
+    spawner.spawn(led_blink(led_blue, 1)).unwrap();
+    spawner.spawn(led_blink(led_green, 5)).unwrap();
+    spawner.spawn(led_blink(led_yellow, 3)).unwrap();
+
+    // spawner.spawn(led_blink(led_red, 4)).unwrap();
+    // spawner.spawn(led_blink(led_blue, 4)).unwrap();
+    // spawner.spawn(led_blink(led_green, 4)).unwrap();
+    // spawner.spawn(led_blink(led_yellow, 4)).unwrap();
 }

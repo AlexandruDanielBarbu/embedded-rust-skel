@@ -33,6 +33,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-debounce"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "48a44b50920a34d68d994be58e3ed336bdc2bfc9dfa2359e14e7cc1f0dbc19c5"
+dependencies = [
+ "embassy-time",
+ "embedded-hal 1.0.0",
+ "embedded-hal-async",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -714,6 +725,7 @@ checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
 name = "pm_proba"
 version = "0.1.0"
 dependencies = [
+ "async-debounce",
  "cortex-m",
  "cortex-m-rt",
  "defmt 1.0.1",
@@ -725,6 +737,7 @@ dependencies = [
  "embassy-sync 0.7.2",
  "embassy-time",
  "embassy-usb",
+ "embedded-hal-async",
  "panic-probe",
 ]
 

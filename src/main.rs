@@ -13,7 +13,7 @@ async fn main(_spawner: Spawner) {
     let peripherals = embassy_stm32::init(Default::default());
 
     let mut led = Output::new(peripherals.PC7, Level::Low, Speed::Low);
-    let mut button = Input::new(peripherals.PA8, Pull::Up);
+    let button = Input::new(peripherals.PA8, Pull::Up);
 
     info!("Dummy started!");
 

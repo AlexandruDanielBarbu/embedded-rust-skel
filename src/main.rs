@@ -43,7 +43,51 @@ async fn main(_spawner: Spawner) {
 
     info!("Scan complet.");
 
+    // ------------------------- EX 2
+
+    // Setează adresa senzorului (schimbă în 0x76 dacă e nevoie)
+    const BMP390_ADDR: u8 = 0x76;
+
+    info!("Configurare BMP390...");
+
+    // 1. Configurare OSR (0x1C): Supradeșantionare temperatură x2
+    // Trimitem un array cu adresa registrului și valoarea dorită
+    if let Err(_) = i2c.write(BMP390_ADDR, &[0x1C, 0b00_001_000]).await {
+        error!("Eroare la scrierea in registrul OSR");
+    }
+
+    // 2. Configurare PWR_CTRL (0x1B): Mod Normal, Temp ON, Pres OFF
+    if let Err(_) = i2c.write(BMP390_ADDR, &[0x1B, 0b00_11_00_10]).await {
+        error!("Eroare la scrierea in registrul PWR_CTRL");
+    }
+
+    info!("Senzor configurat! Incepem citirea la fiecare secunda...");
+
     loop {
-        Timer::after_secs(60).await;
+        // Vrem să citim 3 bytes începând cu DATA_3 (Adresa 0x07)
+        let mut temp_data = [0u8; 3];
+
+        // write_read trimite adresa registrului de start (0x07), apoi citește 3 bytes direct în temp_data
+        match i2c.write_read(BMP390_ADDR, &[0x07], &mut temp_data).await {
+            Ok(_) => {
+                // temp_data[0] = DATA_3 (XLSB)
+                // temp_data[1] = DATA_4 (LSB)
+                // temp_data[2] = DATA_5 (MSB)
+
+                // Asamblăm cele 3 bucăți de 8 biți într-un număr de 24 de biți (u32)
+                let raw_temp: u32 = ((temp_data[2] as u32) << 16)
+                    | ((temp_data[1] as u32) << 8)
+                    | (temp_data[0] as u32);
+
+                info!("Valoare Raw Temperatura: {}", raw_temp);
+            }
+            Err(e) => {
+                // {:?} forteaza printarea detaliilor tehnice ale erorii (ex: Timeout, Nack, Overrun)
+                error!("A esuat citirea! Motiv: {:?}", e);
+            }
+        }
+
+        // Așteptăm 1 secundă
+        Timer::after_secs(1).await;
     }
 }

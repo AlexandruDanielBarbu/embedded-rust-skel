@@ -51,6 +51,7 @@ embassy-time = { version = "0.5.0", features = [
 embassy-usb = { version = "0.5.1", features = [
   "defmt",
 ] }
+embedded-hal = "1.0.0"
 embedded-hal-async = "1.0.0"
 # Panic handler that exits `probe-run` with an error code
 panic-probe = { version = "1.0.0", features = ["print-defmt"] }
